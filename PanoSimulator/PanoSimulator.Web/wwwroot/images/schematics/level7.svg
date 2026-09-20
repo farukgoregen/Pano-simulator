@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%" style="background-color: #fff; font-family: 'Segoe UI', Arial, sans-serif;">
+    <defs>
+        <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+            <circle cx="5" cy="5" r="5" fill="#000" />
+        </marker>
+    </defs>
+
+    <!-- Title -->
+    <text x="400" y="40" font-size="24" font-weight="bold" text-anchor="middle" fill="#2d3748">Seviye 7: Yıldız - Üçgen Yol Verme</text>
+    <text x="400" y="65" font-size="14" text-anchor="middle" fill="#718096">Büyük motorların demeraj akımını düşürmek için Y/Δ güç devresi</text>
+
+    <!-- Phase lines -->
+    <line x1="50" y1="120" x2="750" y2="120" stroke="#000" stroke-width="2" />
+    <text x="30" y="125" font-size="14" font-weight="bold">L1</text>
+    
+    <line x1="50" y1="550" x2="750" y2="550" stroke="#000" stroke-width="2" />
+    <text x="30" y="555" font-size="14" font-weight="bold">N</text>
+
+    <!-- MAIN CONTACTOR (Ana Kontaktör) -->
+    <g transform="translate(150, 0)">
+        <line x1="0" y1="120" x2="0" y2="480" stroke="#000" stroke-width="2" marker-start="url(#dot)" />
+        <rect x="-20" y="480" width="40" height="40" fill="#fff" stroke="#000" stroke-width="2" />
+        <line x1="-20" y1="480" x2="20" y2="520" stroke="#000" stroke-width="2" />
+        <text x="30" y="505" font-size="14" font-weight="bold" fill="#3182ce">K1 (Ana Kontaktör)</text>
+        <line x1="0" y1="520" x2="0" y2="550" stroke="#000" stroke-width="2" marker-end="url(#dot)" />
+    </g>
+
+    <!-- DELTA CONTACTOR (Üçgen Kontaktör) -->
+    <g transform="translate(350, 0)">
+        <line x1="0" y1="120" x2="0" y2="480" stroke="#000" stroke-width="2" marker-start="url(#dot)" />
+        <rect x="-20" y="480" width="40" height="40" fill="#fff" stroke="#000" stroke-width="2" />
+        <line x1="-20" y1="480" x2="20" y2="520" stroke="#000" stroke-width="2" />
+        <text x="30" y="505" font-size="14" font-weight="bold" fill="#e53e3e">K3 (Üçgen Kontaktör)</text>
+        <line x1="0" y1="520" x2="0" y2="550" stroke="#000" stroke-width="2" marker-end="url(#dot)" />
+    </g>
+
+    <!-- STAR CONTACTOR (Yıldız Kontaktör) -->
+    <g transform="translate(550, 0)">
+        <line x1="0" y1="120" x2="0" y2="480" stroke="#000" stroke-width="2" marker-start="url(#dot)" />
+        <rect x="-20" y="480" width="40" height="40" fill="#fff" stroke="#000" stroke-width="2" />
+        <line x1="-20" y1="480" x2="20" y2="520" stroke="#000" stroke-width="2" />
+        <text x="-120" y="505" font-size="14" font-weight="bold" fill="#38a169">K2 (Yıldız)</text>
+        <line x1="0" y1="520" x2="0" y2="550" stroke="#000" stroke-width="2" marker-end="url(#dot)" />
+    </g>
+
+    <!-- Timer (Zaman Rölesi) -->
+    <g transform="translate(680, 0)">
+        <line x1="0" y1="120" x2="0" y2="480" stroke="#000" stroke-width="2" marker-start="url(#dot)" />
+        <rect x="-20" y="480" width="40" height="40" fill="#fff" stroke="#000" stroke-width="2" />
+        <line x1="-20" y1="480" x2="20" y2="520" stroke="#000" stroke-width="2" />
+        <rect x="-20" y="480" width="10" height="10" fill="#000" />
+        <text x="-35" y="505" font-size="14" font-weight="bold" fill="#805ad5">KT</text>
+        <line x1="0" y1="520" x2="0" y2="550" stroke="#000" stroke-width="2" marker-end="url(#dot)" />
+    </g>
+
+    <!-- Motor Representation -->
+    <rect x="350" y="250" width="100" height="100" rx="50" fill="#fff" stroke="#000" stroke-width="2" />
+    <text x="400" y="305" font-size="20" font-weight="bold" text-anchor="middle">M (3~)</text>
+    
+    <!-- Legend -->
+    <rect x="50" y="150" width="280" height="140" fill="#f7fafc" stroke="#e2e8f0" stroke-width="1" rx="4" />
+    <text x="60" y="170" font-size="12" font-weight="bold" fill="#4a5568">Yıldız-Üçgen Mantığı:</text>
+    <text x="60" y="190" font-size="11" fill="#718096">1. Start'a basıldığında K1 (Ana) ve K2 (Yıldız) çeker.</text>
+    <text x="60" y="210" font-size="11" fill="#718096">2. Motor Yıldız kalkış yapar. Aynı anda KT (Timer) başlar.</text>
+    <text x="60" y="230" font-size="11" fill="#718096">3. Süre dolunca K2 (Yıldız) düşer, K3 (Üçgen) çeker.</text>
+    <text x="60" y="250" font-size="11" fill="#718096">4. Ters Kilitleme: K2 ile K3 arasına NC kontaklar konur!</text>
+    <text x="60" y="270" font-size="11" font-weight="bold" fill="#e53e3e">Dikkat: K2 ve K3 aynı anda çekerse KISA DEVRE olur!</text>
+</svg>

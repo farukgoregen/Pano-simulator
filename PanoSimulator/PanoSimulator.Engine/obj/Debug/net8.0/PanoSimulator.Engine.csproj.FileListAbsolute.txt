@@ -1,0 +1,11 @@
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\bin\Debug\net8.0\PanoSimulator.Engine.deps.json
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\bin\Debug\net8.0\PanoSimulator.Engine.dll
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\bin\Debug\net8.0\PanoSimulator.Engine.pdb
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\PanoSimulator.Engine.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\PanoSimulator.Engine.AssemblyInfoInputs.cache
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\PanoSimulator.Engine.AssemblyInfo.cs
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\PanoSimulator.Engine.csproj.CoreCompileInputs.cache
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\PanoSimulator.Engine.dll
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\refint\PanoSimulator.Engine.dll
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\PanoSimulator.Engine.pdb
+C:\Users\faruk\OneDrive\Desktop\pano uygulaması\PanoSimulator\PanoSimulator.Engine\obj\Debug\net8.0\ref\PanoSimulator.Engine.dll

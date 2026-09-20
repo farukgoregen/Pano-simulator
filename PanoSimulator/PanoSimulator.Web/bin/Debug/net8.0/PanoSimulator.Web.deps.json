@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "PanoSimulator.Web/1.0.0": {
+        "dependencies": {
+          "PanoSimulator.Engine": "1.0.0"
+        },
+        "runtime": {
+          "PanoSimulator.Web.dll": {}
+        }
+      },
+      "PanoSimulator.Engine/1.0.0": {
+        "runtime": {
+          "PanoSimulator.Engine.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PanoSimulator.Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PanoSimulator.Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

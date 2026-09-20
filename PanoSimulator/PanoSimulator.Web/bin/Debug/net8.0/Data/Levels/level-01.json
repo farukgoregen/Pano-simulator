@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "ad": "Faz-Nötr ve Lamba",
+  "aciklama": "Otomat sigorta (Q1) ile bir lamba (H1) arasında faz ve nötr hattını doğru bağla. Tek fazlı devrenin temel mantığı.",
+  "kaynak": "Elektrik Kumanda Devreleri ve Ekipmanları §1.1, §2.1, §2.12 / IEC 60204-1",
+  "izinliParcalar": ["breaker", "lamp"],
+  "zorunluParcalar": ["breaker", "lamp"],
+  "plan": "level-01-plan.svg",
+  "testler": [],
+  "kuralKontrolleri": []
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="@(ViewData["Description"] ?? "Elektrik panosu kurma ve arıza bulma simülatörü — kontaktör, termik röle, mühürleme devresi öğren.")" />
+    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} — " : "")Pano Simülatörü</title>
+
+    <!-- Google Fonts: Inter (UI) + JetBrains Mono (terminal etiketleri, log) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Stil: önce token'lar, sonra layout, sonra bileşenler -->
+    <link rel="stylesheet" href="~/css/variables.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @RenderBody()
+
+    <!-- Ana Script Dosyamız (Faz 4) -->
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

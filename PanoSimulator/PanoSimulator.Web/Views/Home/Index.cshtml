@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "Seviyeler";
+    ViewData["Description"] = "Elektrik kumanda devresi seviyeleri — kontaktör, termik röle, mühürleme, yıldız-üçgen.";
+}
+
+<main class="home-page">
+    <header class="home-header">
+        <h1>Pano Simülatörü</h1>
+        <p>Elektrik kumanda devresi kurma ve arıza bulma simülatörü — "Elektrik Kumanda Devreleri ve Ekipmanları" kitabına göre</p>
+    </header>
+
+    <section aria-label="Seviye listesi">
+        <div class="level-grid">
+
+            <!-- Seviye 1 -->
+            <a id="level-card-1" href="/simulator/1" class="level-card level-card--completed"
+               aria-label="Seviye 1: Faz-Nötr ve Lamba — Tamamlandı">
+                <div class="level-card__number">SEVİYE 01</div>
+                <div class="level-card__name">Faz-Nötr ve Lamba</div>
+                <div class="level-card__desc">Otomat sigorta ile lamba devresini kur. Faz ve nötr hattının mantığını kavra.</div>
+                <div class="level-card__source">Kitap §1.1, §2.1, §2.12</div>
+                <div class="level-card__badge level-card__badge--ok">✓ Tamamlandı</div>
+            </a>
+
+            <!-- Seviye 2 -->
+            <a id="level-card-2" href="/simulator/2" class="level-card"
+               aria-label="Seviye 2: Buton ile Lamba">
+                <div class="level-card__number">SEVİYE 02</div>
+                <div class="level-card__name">Buton ile Lamba</div>
+                <div class="level-card__desc">NO ve NC buton farkını öğren. Momentan ve kilitleme davranışı.</div>
+                <div class="level-card__source">Kitap §2.9, §3.5</div>
+            </a>
+
+            <!-- Seviye 3 -->
+            <a id="level-card-3" href="/simulator/3" class="level-card"
+               aria-label="Seviye 3: Kesikli Çalıştırma">
+                <div class="level-card__number">SEVİYE 03</div>
+                <div class="level-card__name">Kesikli Çalıştırma (Jog)</div>
+                <div class="level-card__desc">Kontaktörle kesikli (jog) motor çalıştırma. Bobin-kontak ilişkisi.</div>
+                <div class="level-card__source">Kitap §3.5</div>
+            </a>
+
+            <!-- Seviye 4 — MVP -->
+            <a id="level-card-4" href="/simulator/4" class="level-card"
+               aria-label="Seviye 4: Mühürlemeli Doğrudan Yol Verme">
+                <div class="level-card__number">SEVİYE 04</div>
+                <div class="level-card__name">Mühürlemeli Doğrudan Yol Verme</div>
+                <div class="level-card__desc">Start-stop butonuyla mühürlemeli asenkron motor devresi. Termik röle koruması.</div>
+                <div class="level-card__source">Kitap §3.6 / IEC 60204-1</div>
+            </a>
+
+            <!-- Seviye 5 -->
+            <a id="level-card-5" href="/simulator/5" class="level-card"
+               aria-label="Seviye 5: Sinyal Lambalı Doğrudan Yol">
+                <div class="level-card__number">SEVİYE 05</div>
+                <div class="level-card__name">Sinyal Lambalı Doğrudan Yol</div>
+                <div class="level-card__desc">Termik röle atışını arıza lambası ile göster. 95-96 / 97-98 kontak mantığı.</div>
+                <div class="level-card__source">Kitap §3.14</div>
+            </a>
+
+            <!-- Seviye 6 -->
+            <a id="level-card-6" href="/simulator/6" class="level-card"
+               aria-label="Seviye 6: İleri-Geri Çalıştırma">
+                <div class="level-card__number">SEVİYE 06</div>
+                <div class="level-card__name">İleri-Geri Çalıştırma</div>
+                <div class="level-card__desc">Faz değiştirme + elektriksel kilitleme. İki kontaktörün birbirini kilitlemesi.</div>
+                <div class="level-card__source">Kitap §3.10, §3.10.1</div>
+            </a>
+
+            <!-- Seviye 7 -->
+            <a id="level-card-7" href="/simulator/7" class="level-card"
+               aria-label="Seviye 7: Yıldız-Üçgen Yol Verme">
+                <div class="level-card__number">SEVİYE 07</div>
+                <div class="level-card__name">Yıldız-Üçgen Yol Verme</div>
+                <div class="level-card__desc">Zaman röleli yıldız-üçgen devresi. Yol alma akımını sınırla.</div>
+                <div class="level-card__source">Kitap §3.17, §3.18</div>
+            </a>
+
+            <!-- Seviye 8 -->
+            <a id="level-card-8" href="/simulator/8" class="level-card"
+               aria-label="Seviye 8: Sensör ile Otomatik Durdurma">
+                <div class="level-card__number">SEVİYE 08</div>
+                <div class="level-card__name">Sensör ile Otomatik Durdurma</div>
+                <div class="level-card__desc">Limit switch veya endüktif sensörle motorun otomatik durdurulması.</div>
+                <div class="level-card__source">Kitap §3.15, §2.16</div>
+            </a>
+
+            <!-- Seviye 9 -->
+            <a id="level-card-9" href="/simulator/9" class="level-card"
+               aria-label="Seviye 9: PLC Giriş-Çıkış ile Motor Kontrolü">
+                <div class="level-card__number">SEVİYE 09</div>
+                <div class="level-card__name">PLC ile Motor Kontrolü</div>
+                <div class="level-card__desc">PLC dijital giriş/çıkış kartı + kontaktör ile aynı devreyi kur.</div>
+                <div class="level-card__source">Kitap §2.17 (PNP/NPN) / PLC temelleri</div>
+            </a>
+
+        </div>
+    </section>
+</main>

@@ -1,0 +1,279 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   layout.css — Sayfa Yerleşimi
+   
+   Oyun ekranı 4 bölgeden oluşur:
+     1. Üst Toolbar    (--toolbar-h sabit)
+     2. Ana Alan       (kalan yükseklik — pano SVG + plan paneli)
+     3. Durum Konsolu  (sol alt, üzerine bindirme)
+     4. Alt Çekmece    (--drawer-h sabit)
+═══════════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Seviye Seçim Sayfası (Ana Sayfa) ────────────────────────────────────── */
+.home-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-header {
+    padding: 2rem 2.5rem 1.5rem;
+    border-bottom: 1px solid var(--clr-border-subtle);
+}
+
+.home-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--clr-text-heading);
+    letter-spacing: -0.02em;
+}
+
+.home-header p {
+    color: var(--clr-text-muted);
+    margin-top: 0.3rem;
+    font-size: var(--font-size-sm);
+}
+
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 2rem 2.5rem;
+}
+
+/* ── Oyun Ekranı Ana Yerleşim ────────────────────────────────────────────── */
+.sim-layout {
+    display: grid;
+    grid-template-rows: var(--toolbar-h) 1fr var(--drawer-h);
+    grid-template-columns: 1fr;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 1. Üst Toolbar */
+.sim-toolbar {
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1.25rem;
+    background: var(--clr-surface);
+    border-bottom: 1px solid var(--clr-border);
+    z-index: 50;
+}
+
+.sim-toolbar__title {
+    flex: 1;
+    min-width: 0;
+}
+
+.sim-toolbar__level-name {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--clr-text-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sim-toolbar__level-desc {
+    font-size: var(--font-size-xs);
+    color: var(--clr-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sim-toolbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* 2. Ana Alan (Pano + Plan Paneli) */
+.sim-main {
+    grid-row: 2;
+    position: relative;
+    overflow: hidden;
+    background: var(--clr-bg);
+}
+
+/* Pano SVG alanı — tam doluyor */
+.sim-panel-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Plan paneli — sağ üste bindirme */
+.sim-plan-panel {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: var(--plan-panel-w);
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.sim-plan-panel--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(8px);
+}
+
+.sim-plan-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--clr-border-subtle);
+    background: var(--clr-surface-hover);
+}
+
+.sim-plan-panel__title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--clr-text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.sim-plan-panel__tabs {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--clr-border-subtle);
+}
+
+.sim-plan-panel__body {
+    flex: 1;
+    padding: 0.75rem;
+    overflow: auto;
+}
+
+/* Durum Konsolu — sol alta bindirme */
+.sim-status-console {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem; /* Sola değil sağa yasla ki DIN raylarını kapatmasın */
+    width: var(--status-console-w);
+    max-height: 220px;
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sim-status-console__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--clr-border-subtle);
+    background: var(--clr-surface-hover);
+}
+
+.sim-status-console__title {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--clr-text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.sim-status-console__log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+/* 3. Alt Çekmece (Malzeme) */
+.sim-drawer {
+    grid-row: 3;
+    background: var(--clr-surface);
+    border-top: 1px solid var(--clr-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 20;
+}
+
+.sim-drawer__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.4rem 1rem;
+    border-bottom: 1px solid var(--clr-border-subtle);
+    flex-shrink: 0;
+}
+
+.sim-drawer__label {
+    font-size: var(--font-size-xs);
+    color: var(--clr-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.sim-drawer__parts {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    overflow-x: auto;
+    flex: 1;
+    align-items: center;
+    scrollbar-width: thin;
+    scrollbar-color: var(--clr-border) transparent;
+}
+
+/* ── Yardımcı ─────────────────────────────────────────────────────────────── */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.flex-spacer { flex: 1; }
+
+/* Klavye odağı görünür olsun (erişilebilirlik) */
+:focus-visible {
+    outline: 2px solid var(--clr-border-focus);
+    outline-offset: 2px;
+}

@@ -1,0 +1,467 @@
+@using PanoSimulator.Engine.Components
+@using System.Text.Json
+@{
+    int levelId = ViewBag.LevelId ?? 1;
+    ViewData["Title"] = $"Seviye {levelId}";
+
+    // Seviye meta — Faz 6'da JSON'dan okunacak, şimdilik hardcoded
+    var levelNames = new Dictionary<int, (string Ad, string Aciklama, string Kaynak)>
+    {
+        [1] = ("Faz-Nötr ve Lamba",                 "Otomat sigorta ile lamba devresi",                   "Kitap §1.1, §2.1"),
+        [2] = ("Buton ile Lamba",                    "NO/NC buton farkı",                                  "Kitap §2.9, §3.5"),
+        [3] = ("Gecikmeli Çalıştırma (Zaman Rölesi)","Start butonuna basıldıktan sonra gecikmeli çalışma","Kitap §4.2"),
+        [4] = ("Mühürlemeli Doğrudan Yol Verme",     "Start-stop mühürlemeli asenkron motor devresi",      "Kitap §3.6"),
+        [5] = ("Sinyal Lambalı Doğrudan Yol",        "Termik röle + arıza lambası",                        "Kitap §3.14"),
+        [6] = ("İleri-Geri Çalıştırma",              "Ters kilitlemeli ileri-geri motor devresi",          "Kitap §3.10"),
+        [7] = ("Yıldız-Üçgen Yol Verme",             "Zaman röleli yıldız-üçgen devresi",                  "Kitap §3.17-3.18"),
+        [8] = ("Sensör ile Otomatik Durdurma",       "Limit switch ile sınırda otomatik durma",            "Kitap §3.15"),
+        [9] = ("PLC ile Motor Kontrolü",             "PLC dijital I/O + kontaktör",                        "Kitap §2.17"),
+    };
+
+    var (ad, aciklama, kaynak) = levelNames.TryGetValue(levelId, out var info)
+        ? info
+        : ("Seviye", "", "");
+
+    // JS'e aktarmak için komponent kataloğunu hazırla
+    var catalogData = ComponentCatalog.GetAll().Select(c => new
+    {
+        type = c.Type,
+        label = c.Label,
+        description = c.Description,
+        widthUnits = c.WidthUnits,
+        category = c.Category.ToString(),
+        terminals = c.Terminals.Select(t => new { id = t.Id, x = t.X, y = t.Y })
+    });
+    string catalogJson = JsonSerializer.Serialize(catalogData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+}
+
+<script>
+    // Faz 4: Parça tanımlarını C#'tan alıp global JS değişkenine aktaralım.
+    window.COMPONENT_CATALOG = @Html.Raw(catalogJson);
+</script>
+
+
+<div class="sim-layout">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         1. ÜST TOOLBAR
+    ═══════════════════════════════════════════════════════════════ -->
+    <header class="sim-toolbar" role="banner">
+        <!-- Sol: Geri Dön Butonu -->
+        <a href="@Url.Action("Index", "Home")" class="btn btn--icon" title="Ana Menüye Dön" style="margin-right: 1rem; text-decoration: none;">
+            ⬅ Geri
+        </a>
+
+        <!-- Sol: Seviye başlığı -->
+        <div class="sim-toolbar__title">
+            <div class="sim-toolbar__level-name" id="level-title">
+                Seviye @levelId — @ad
+            </div>
+            <div class="sim-toolbar__level-desc" id="level-desc">@aciklama</div>
+        </div>
+
+        <!-- Orta ayırıcı -->
+        <div class="divider" aria-hidden="true"></div>
+
+        <!-- Eylem butonları -->
+        <div class="sim-toolbar__actions">
+            <!-- Enerji Ver: toggle, aç/kapat -->
+            <button id="btn-power"
+                    class="btn btn--power"
+                    aria-pressed="false"
+                    title="Ana otomatı aç veya kapat">
+                ⏻ Enerji Ver
+            </button>
+
+            <!-- START: basılı tutulurken aktif (pointerdown/pointerup) -->
+            <button id="btn-start"
+                    class="btn btn--start"
+                    aria-label="START butonuna bas ve basılı tut">
+                ▶ START
+            </button>
+
+            <!-- STOP: basılı tutulurken aktif -->
+            <button id="btn-stop"
+                    class="btn btn--stop"
+                    aria-label="STOP butonuna bas ve basılı tut">
+                ■ STOP
+            </button>
+
+            <div class="divider" aria-hidden="true"></div>
+
+            <!-- Termik Attır: simülasyon amaçlı -->
+            <button id="btn-thermal"
+                    class="btn"
+                    aria-pressed="false"
+                    title="Termik röleyi manüel attır — aşırı akım simülasyonu">
+                ⚡ Termik Attır
+            </button>
+
+            <!-- Sil modu -->
+            <button id="btn-delete"
+                    class="btn btn--danger"
+                    aria-pressed="false"
+                    title="Kablo silme modunu aç/kapat">
+                ✂ Sil
+            </button>
+
+            <!-- Kontrol Et -->
+            <button id="btn-check"
+                    class="btn btn--primary"
+                    title="Devreyi test senaryosundan geçir">
+                ✓ Kontrol Et
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         2. ANA ALAN — Pano + Plan Paneli + Durum Konsolu
+    ═══════════════════════════════════════════════════════════════ -->
+    <main class="sim-main" id="sim-main" aria-label="Pano çalışma alanı">
+
+        <!-- Boş Pano SVG (Faz 4'te doldurulacak) -->
+        <svg id="panel-svg"
+             class="sim-panel-canvas"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-label="Elektrik panosu"
+             role="img">
+
+            <!-- Pano gövdesi -->
+            <rect id="panel-body" x="20" y="20" width="calc(100% - 40)" height="85%"
+                  rx="4" fill="var(--clr-panel-body)" stroke="var(--clr-border)" stroke-width="2"/>
+
+            <!-- DIN Ray 1 (üst) -->
+            <g id="rail-0" transform="translate(80, 100)" aria-label="DIN Ray 1">
+                <rect x="0" y="8" width="560" height="8"
+                      fill="var(--clr-rail)" rx="1"/>
+                <rect x="0" y="10" width="560" height="4"
+                      fill="var(--clr-rail-groove)" rx="1"/>
+                <text x="2" y="6" fill="var(--clr-text-label)"
+                      font-size="9" font-family="JetBrains Mono, monospace">DIN RAY 1</text>
+            </g>
+
+            <!-- DIN Ray 2 (orta) -->
+            <g id="rail-1" transform="translate(40, 220)" aria-label="DIN Ray 2">
+                <rect x="0" y="8" width="600" height="8"
+                      fill="var(--clr-rail)" rx="1"/>
+                <rect x="0" y="10" width="600" height="4"
+                      fill="var(--clr-rail-groove)" rx="1"/>
+                <text x="2" y="6" fill="var(--clr-text-label)"
+                      font-size="9" font-family="JetBrains Mono, monospace">DIN RAY 2</text>
+            </g>
+
+            <!-- DIN Ray 3 (alt) -->
+            <g id="rail-2" transform="translate(40, 340)" aria-label="DIN Ray 3">
+                <rect x="0" y="8" width="600" height="8"
+                      fill="var(--clr-rail)" rx="1"/>
+                <rect x="0" y="10" width="600" height="4"
+                      fill="var(--clr-rail-groove)" rx="1"/>
+                <text x="2" y="6" fill="var(--clr-text-label)"
+                      font-size="9" font-family="JetBrains Mono, monospace">DIN RAY 3</text>
+            </g>
+
+            <!-- Saha Bölgesi (pano dışı: motor, buton kutusu) -->
+            <g id="field-zone" aria-label="Saha bölgesi — pano dışı elemanlar">
+                <rect x="20" y="460" width="calc(100% - 40)" height="120"
+                      rx="4" fill="var(--clr-field-zone)"
+                      stroke="var(--clr-border-subtle)" stroke-width="1" stroke-dasharray="6 4"/>
+                <text x="40" y="482" fill="var(--clr-text-label)"
+                      font-size="10" font-family="JetBrains Mono, monospace">
+                    SAHA — Motor / Buton Kutusu (Pano Dışı)
+                </text>
+            </g>
+
+            <!-- Güç Dağıtım Bloğu (Supply) -->
+            <g id="supply-block" transform="translate(40, 80)" class="sim-part" data-id="__supply">
+                <rect x="0" y="0" width="20" height="280" fill="var(--clr-panel-inner, #23272e)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                <!-- L1 -->
+                <g class="sim-terminal" transform="translate(10, 20)" data-terminal-id="L1">
+                    <circle r="4" class="sim-terminal__screw"></circle>
+                    <text y="-8" class="sim-terminal__label" text-anchor="middle">L1</text>
+                </g>
+                <!-- L2 -->
+                <g class="sim-terminal" transform="translate(10, 80)" data-terminal-id="L2">
+                    <circle r="4" class="sim-terminal__screw"></circle>
+                    <text y="-8" class="sim-terminal__label" text-anchor="middle">L2</text>
+                </g>
+                <!-- L3 -->
+                <g class="sim-terminal" transform="translate(10, 140)" data-terminal-id="L3">
+                    <circle r="4" class="sim-terminal__screw"></circle>
+                    <text y="-8" class="sim-terminal__label" text-anchor="middle">L3</text>
+                </g>
+                <!-- N -->
+                <g class="sim-terminal" transform="translate(10, 200)" data-terminal-id="N">
+                    <circle r="4" class="sim-terminal__screw"></circle>
+                    <text y="-8" class="sim-terminal__label" text-anchor="middle">N</text>
+                </g>
+                <!-- PE -->
+                <g class="sim-terminal" transform="translate(10, 260)" data-terminal-id="PE">
+                    <circle r="4" class="sim-terminal__screw"></circle>
+                    <text y="-8" class="sim-terminal__label" text-anchor="middle">PE</text>
+                </g>
+            </g>
+
+            <!-- Kablolar ve parçalar Faz 4-5'te JS tarafından buraya eklenecek -->
+            <g id="wires-layer" aria-hidden="true"></g>
+            <g id="parts-layer" aria-label="Panoya yerleştirilmiş parçalar"></g>
+
+            <!-- Boş alan mesajı (Faz 4'te parça eklenince kaldırılacak) -->
+            <g id="empty-hint" transform="translate(300, 300)">
+                <text text-anchor="middle" fill="var(--clr-text-disabled)"
+                      font-size="13" font-family="Inter, sans-serif" dy="-10">
+                    Malzeme çekmecesinden parça sürükleyip buraya bırak
+                </text>
+                <text text-anchor="middle" fill="var(--clr-text-disabled)"
+                      font-size="11" font-family="Inter, sans-serif" dy="10">
+                    Terminallere tıklayarak kablo çek · ESC ile seçimi iptal et
+                </text>
+            </g>
+        </svg>
+
+        <!-- ─── Plan Paneli (sağ üst bindirme) ─────────────────────────── -->
+        <aside id="plan-panel"
+               class="sim-plan-panel"
+               aria-label="Seviye plan şeması">
+            <div class="sim-plan-panel__header">
+                <span class="sim-plan-panel__title">Seviye Planı</span>
+                <button id="plan-toggle-btn"
+                        class="btn btn--icon"
+                        aria-expanded="true"
+                        aria-controls="plan-panel"
+                        title="Plan panelini gizle">
+                    Gizle
+                </button>
+            </div>
+            <div class="sim-plan-panel__tabs">
+                <div class="tab-bar" role="tablist" aria-label="Şema seçimi">
+                    <button class="tab-btn is-active" role="tab"
+                            data-tab="power" aria-selected="true"
+                            id="tab-power">Güç Devresi</button>
+                    <button class="tab-btn" role="tab"
+                            data-tab="control" aria-selected="false"
+                            id="tab-control">Kumanda Devresi</button>
+                </div>
+            </div>
+            <div class="sim-plan-panel__body" role="tabpanel" aria-labelledby="tab-power">
+                <!-- Faz 6'da level SVG şeması buraya yüklenecek -->
+                <div class="empty-state" style="padding: 1rem;">
+                    @if (levelId == 1 || levelId == 2 || levelId == 3 || levelId == 6 || levelId == 8)
+                    {
+                        <img src="~/images/schematics/level@(levelId).svg" style="max-width: 100%; max-height: 120px; opacity: 0.8; border-radius: 4px;" alt="Elektrik Şeması" />
+                    }
+                    else
+                    {
+                        <span>📐</span>
+                        <span>Seviye planı</span>
+                        <small style="color: var(--clr-text-disabled)">@kaynak</small>
+                    }
+                    <button id="btn-zoom-plan" class="btn btn--primary" style="margin-top: 1rem;">
+                        🔍 Büyüt (Şemayı İncele)
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ─── Plan Büyütme Modalı (Faz 6) ────────────────────────────── -->
+        <div id="plan-modal-backdrop" class="report-modal-backdrop" style="display: none;" aria-hidden="true">
+            <div class="report-modal" style="width: min(800px, 92vw);">
+                <h2>Seviye @levelId — @ad Şeması</h2>
+                <div style="background: var(--clr-panel-inner); border: 1px solid var(--clr-border); border-radius: var(--radius-sm); padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 400px;">
+                    @if (levelId == 1 || levelId == 2 || levelId == 3 || levelId == 6 || levelId == 8)
+                    {
+                        <img src="~/images/schematics/level@(levelId).svg" style="max-width: 100%; height: auto;" alt="Elektrik Şeması" />
+                    }
+                    else
+                    {
+                        <svg width="400" height="300" viewBox="0 0 400 300">
+                            <text x="200" y="150" fill="var(--clr-text-muted)" text-anchor="middle" font-family="Inter">@kaynak Şeması (Yakında)</text>
+                        </svg>
+                    }
+                </div>
+                <div class="report-modal__actions">
+                    <button id="btn-close-plan" class="btn">Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Durum Konsolu (sol alt bindirme) ─────────────────────────── -->
+        <aside id="status-console"
+               class="sim-status-console"
+               aria-label="Pano durumu">
+            <div class="sim-status-console__header">
+                <span class="sim-status-console__title">Pano Durumu</span>
+                <button id="console-toggle-btn"
+                        class="btn btn--icon"
+                        title="Konsolu küçült">
+                    Küçült
+                </button>
+            </div>
+            <div class="sim-status-console__log" role="log" aria-live="polite" aria-atomic="false">
+                <!-- Başlangıç mesajı -->
+                <div class="log-entry log-entry--info">
+                    <span class="log-entry__icon">·</span>
+                    <span class="log-entry__msg">Parça yerleştir, kablo çek, "Enerji Ver"e bas.</span>
+                </div>
+                <!-- Faz 2'de CircuitSolver sonuçları buraya JS ile eklenir -->
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         3. ALT ÇEKMECE — Malzeme ve Kablo Rengi
+    ═══════════════════════════════════════════════════════════════ -->
+    <footer class="sim-drawer" id="parts-drawer" aria-label="Malzeme çekmecesi">
+        <div class="sim-drawer__header">
+            <span class="sim-drawer__label">Malzeme Çekmecesi</span>
+
+            <!-- Kablo rengi seçici -->
+            <div class="wire-color-picker" role="group" aria-label="Kablo rengi seç">
+                <span class="wire-color-picker__label">Kablo:</span>
+                <button class="wire-swatch" data-color="brown" title="Kahverengi" aria-label="Kahverengi kablo"></button>
+                <button class="wire-swatch" data-color="black" title="Siyah" aria-label="Siyah kablo"></button>
+                <button class="wire-swatch" data-color="gray" title="Gri" aria-label="Gri kablo"></button>
+                <button class="wire-swatch" data-color="red" title="Kırmızı" aria-label="Kırmızı kablo"></button>
+                <button class="wire-swatch" data-color="blue" title="Mavi" aria-label="Mavi kablo"></button>
+                <button class="wire-swatch" data-color="white" title="Beyaz" aria-label="Beyaz kablo"></button>
+                <button class="wire-swatch" data-color="pink" title="Pembe" aria-label="Pembe kablo"></button>
+                <button class="wire-swatch" data-color="purple" title="Mor" aria-label="Mor kablo"></button>
+                <button class="wire-swatch" data-color="green" title="Yeşil" aria-label="Yeşil kablo"></button>
+            </div>
+
+            <div class="flex-spacer"></div>
+            <span class="sim-drawer__label" style="font-size: 10px; color: var(--clr-text-disabled)">
+                Sürükleyip panoya bırak
+            </span>
+        </div>
+
+        <!-- Parça kartları (Faz 4'te sürükle-bırak eklenecek) -->
+        <div class="sim-drawer__parts" id="drawer-parts" role="list" aria-label="Kullanılabilir malzemeler">
+
+            <div class="part-card" draggable="true" data-type="breaker" role="listitem"
+                 title="3 kutuplu otomat sigorta — Q1 | Terminal: 1/2, 3/4, 5/6">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="4" y="2" width="28" height="32" rx="2" fill="var(--clr-surface-hover)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                        <line x1="12" y1="10" x2="12" y2="26" stroke="var(--clr-text-muted)" stroke-width="2"/>
+                        <line x1="18" y1="10" x2="18" y2="26" stroke="var(--clr-text-muted)" stroke-width="2"/>
+                        <line x1="24" y1="10" x2="24" y2="26" stroke="var(--clr-text-muted)" stroke-width="2"/>
+                        <rect x="10" y="16" width="16" height="5" fill="var(--clr-accent)" opacity="0.6" rx="1"/>
+                    </svg>
+                </div>
+                <div class="part-card__name">Otomat<br>Sigorta</div>
+                <div class="part-card__type">Q1 / 3P</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="contactor" role="listitem"
+                 title="Kontaktör — K1 | Terminal: 1/2, 3/4, 5/6 (güç) · 13/14 (yardımcı NO) · A1/A2 (bobin)">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="3" y="2" width="30" height="32" rx="2" fill="var(--clr-surface-hover)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                        <rect x="7" y="14" width="22" height="8" rx="1" fill="var(--clr-part-off)" stroke="var(--clr-border)" stroke-width="1"/>
+                        <circle cx="18" cy="30" r="3" fill="var(--clr-surface)" stroke="var(--clr-accent)" stroke-width="1.5"/>
+                        <text x="18" y="11" text-anchor="middle" fill="var(--clr-text-muted)" font-size="7" font-family="JetBrains Mono">K</text>
+                    </svg>
+                </div>
+                <div class="part-card__name">Kontaktör</div>
+                <div class="part-card__type">K1</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="thermalRelay" role="listitem"
+                 title="Termik röle — F2 | Terminal: 95/96 (NC), 97/98 (NO) — kumanda devresine alınır">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="3" y="2" width="30" height="32" rx="2" fill="var(--clr-surface-hover)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                        <path d="M10 26 Q14 18 18 26 Q22 34 26 26" stroke="var(--clr-status-warn)" stroke-width="2" fill="none"/>
+                        <line x1="18" y1="8" x2="18" y2="14" stroke="var(--clr-text-muted)" stroke-width="2"/>
+                        <text x="18" y="13" text-anchor="middle" fill="var(--clr-text-muted)" font-size="6" font-family="JetBrains Mono">F2</text>
+                    </svg>
+                </div>
+                <div class="part-card__name">Termik<br>Röle</div>
+                <div class="part-card__type">F2 / 95-96</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="button-no" role="listitem"
+                 title="NO Start butonu — Normalde Açık kontak | Terminal: 13/14 veya 3/4">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="18" cy="18" r="14" fill="var(--clr-status-ok)" opacity="0.15" stroke="var(--clr-status-ok)" stroke-width="1.5"/>
+                        <text x="18" y="22" text-anchor="middle" fill="var(--clr-status-ok)" font-size="11" font-weight="bold" font-family="Inter">NO</text>
+                        <line x1="10" y1="28" x2="14" y2="28" stroke="var(--clr-text-muted)" stroke-width="1.5"/>
+                        <line x1="22" y1="28" x2="26" y2="28" stroke="var(--clr-text-muted)" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="part-card__name">Start<br>Butonu</div>
+                <div class="part-card__type">NO</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="button-nc" role="listitem"
+                 title="NC Stop butonu — Normalde Kapalı kontak | Basılınca devre açılır">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="18" cy="18" r="14" fill="var(--clr-status-fault)" opacity="0.15" stroke="var(--clr-status-fault)" stroke-width="1.5"/>
+                        <text x="18" y="22" text-anchor="middle" fill="var(--clr-status-fault)" font-size="11" font-weight="bold" font-family="Inter">NC</text>
+                        <line x1="10" y1="28" x2="26" y2="28" stroke="var(--clr-text-muted)" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="part-card__name">Stop<br>Butonu</div>
+                <div class="part-card__type">NC</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="motor" role="listitem"
+                 title="3 fazlı asenkron motor — M1 | Terminal: U/V/W (güç), PE (toprak)">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="18" cy="18" r="14" fill="var(--clr-surface-hover)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                        <text x="18" y="16" text-anchor="middle" fill="var(--clr-text)" font-size="9" font-weight="600" font-family="Inter">M</text>
+                        <text x="18" y="25" text-anchor="middle" fill="var(--clr-text-muted)" font-size="7" font-family="Inter">3~</text>
+                    </svg>
+                </div>
+                <div class="part-card__name">Motor</div>
+                <div class="part-card__type">M1 / 3~</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="lamp" role="listitem"
+                 title="Sinyal lambası — Çalışma / Arıza göstergesi">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="18" cy="16" r="10" fill="var(--clr-status-warn)" opacity="0.2" stroke="var(--clr-status-warn)" stroke-width="1.5"/>
+                        <line x1="18" y1="26" x2="18" y2="32" stroke="var(--clr-text-muted)" stroke-width="2"/>
+                        <line x1="14" y1="32" x2="22" y2="32" stroke="var(--clr-text-muted)" stroke-width="2"/>
+                        <circle cx="18" cy="16" r="5" fill="var(--clr-status-warn)" opacity="0.5"/>
+                    </svg>
+                </div>
+                <div class="part-card__name">Sinyal<br>Lambası</div>
+                <div class="part-card__type">H1</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="timer" role="listitem"
+                 title="Zaman rölesi — TON (açılma gecikmeli)">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="4" y="4" width="28" height="28" rx="14" fill="var(--clr-surface-hover)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                        <line x1="18" y1="10" x2="18" y2="18" stroke="var(--clr-accent)" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="18" x2="24" y2="22" stroke="var(--clr-text-muted)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="part-card__name">Zaman<br>Rölesi</div>
+                <div class="part-card__type">KT / TON</div>
+            </div>
+
+            <div class="part-card" draggable="true" data-type="limitSwitch" role="listitem"
+                 title="Limit Sınır Anahtarı (11-12 NC, 13-14 NO)">
+                <div class="part-card__icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="12" y="8" width="12" height="20" rx="2" fill="var(--clr-surface-hover)" stroke="var(--clr-border)" stroke-width="1.5"/>
+                        <circle cx="18" cy="4" r="3" fill="var(--clr-accent)"/>
+                        <line x1="18" y1="7" x2="18" y2="10" stroke="var(--clr-border)" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="part-card__name">Limit<br>Switch</div>
+                <div class="part-card__type">SQ1</div>
+            </div>
+
+        </div>
+    </footer>
+
+</div>

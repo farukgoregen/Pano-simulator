@@ -1,0 +1,97 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "PanoSimulator.Engine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/PanoSimulator.Engine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PanoSimulator.Engine.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PanoSimulator.Engine/1.0.0": {
+      "type": "project",
+      "path": "../PanoSimulator.Engine/PanoSimulator.Engine.csproj",
+      "msbuildProject": "../PanoSimulator.Engine/PanoSimulator.Engine.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "PanoSimulator.Engine >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\faruk\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\faruk\\OneDrive\\Desktop\\pano uygulaması\\PanoSimulator\\PanoSimulator.Web\\PanoSimulator.Web.csproj",
+      "projectName": "PanoSimulator.Web",
+      "projectPath": "C:\\Users\\faruk\\OneDrive\\Desktop\\pano uygulaması\\PanoSimulator\\PanoSimulator.Web\\PanoSimulator.Web.csproj",
+      "packagesPath": "C:\\Users\\faruk\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\faruk\\OneDrive\\Desktop\\pano uygulaması\\PanoSimulator\\PanoSimulator.Web\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\faruk\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "C:\\Users\\faruk\\OneDrive\\Desktop\\pano uygulaması\\PanoSimulator\\PanoSimulator.Engine\\PanoSimulator.Engine.csproj": {
+              "projectPath": "C:\\Users\\faruk\\OneDrive\\Desktop\\pano uygulaması\\PanoSimulator\\PanoSimulator.Engine\\PanoSimulator.Engine.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.AspNetCore.App": {
+            "privateAssets": "none"
+          },
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.425/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

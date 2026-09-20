@@ -1,0 +1,132 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   variables.css — Pano Simülatörü Design Token'ları
+   
+   Renk sistemi: Endüstriyel/atölye estetiği.
+   Asıl renk kablolarda — arayüz nötr, kablolar öne çıksın.
+   
+   Kablo renkleri: IEC 60204-1 Tablo 4
+   Tema: prefers-color-scheme ile otomatik koyu/açık geçiş
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ── Arkaplan & Yüzeyler ─────────────────────────────────────────────── */
+    --clr-bg:               #151820;   /* En dıştaki sayfa zemini */
+    --clr-panel-body:       #1e2128;   /* Metal pano gövdesi */
+    --clr-panel-inner:      #242830;   /* Pano iç yüzeyi */
+    --clr-rail:             #2e3240;   /* DIN ray rengi */
+    --clr-rail-groove:      #1a1e28;   /* DIN ray oluğu */
+    --clr-surface:          #2a2f3a;   /* Kart, panel yüzeyleri */
+    --clr-surface-hover:    #323848;   /* Hover durumu */
+    --clr-surface-active:   #3a4258;   /* Aktif/seçili */
+    --clr-field-zone:       #1c2028;   /* Saha bölgesi (pano dışı) */
+
+    /* ── Kenarlık & Çizgi ────────────────────────────────────────────────── */
+    --clr-border:           #363d50;
+    --clr-border-subtle:    #2a3040;
+    --clr-border-focus:     #4a8fff;
+
+    /* ── Tipografi ───────────────────────────────────────────────────────── */
+    --clr-text:             #c8ccd8;   /* Ana metin */
+    --clr-text-muted:       #6a7080;   /* İkincil metin */
+    --clr-text-disabled:    #404550;
+    --clr-text-heading:     #e0e4f0;
+    --clr-text-label:       #8890a8;   /* Terminal etiketleri */
+
+    /* ── Vurgu Rengi ─────────────────────────────────────────────────────── */
+    --clr-accent:           #3d8fff;
+    --clr-accent-glow:      rgba(61, 143, 255, 0.25);
+
+    /* ── Durum Renkleri (Durum Ekranı için) ─────────────────────────────── */
+    --clr-status-ok:        #3ab870;   /* ● Motor çalışıyor, bobin enerjili */
+    --clr-status-warn:      #e09830;   /* ▲ Topraklama eksik, yanlış kablo rengi */
+    --clr-status-fault:     #e03040;   /* ■ Kısa devre, kaçak, faz eksik */
+    --clr-status-info:      #5a6278;   /* · Bilgi mesajı */
+
+    /* Parça durum göstergesi */
+    --clr-part-on:          #2ea860;   /* Kontaktör çekti — yeşil kenarlık */
+    --clr-part-off:         #363d50;   /* Düşük */
+    --clr-part-fault:       #cc2832;   /* Arıza */
+
+    --wire-brown:           #8B4513;   /* Kahverengi */
+    --wire-black:           #111111;   /* Siyah */
+    --wire-gray:            #808080;   /* Gri */
+    --wire-red:             #ff0000;   /* Kırmızı */
+    --wire-blue:            #0000ff;   /* Mavi */
+    --wire-white:           #ffffff;   /* Beyaz */
+    --wire-pink:            #ffc0cb;   /* Pembe */
+    --wire-purple:          #800080;   /* Mor */
+    --wire-green:           #008000;   /* Yeşil */
+
+    /* Kablo görsel kalınlığı (px) */
+    --wire-stroke-width:    3px;
+    --wire-stroke-energy:   4px;       /* Enerjili kablo biraz daha kalın */
+
+    /* ── Boyutlar & Yerleşim ─────────────────────────────────────────────── */
+    --toolbar-h:            56px;
+    --drawer-h:             148px;
+    --plan-panel-w:         340px;
+    --status-console-w:     280px;
+    --rail-h:               40px;      /* DIN ray yüksekliği */
+    --rail-unit:            18px;      /* 1 DIN birimi = 18mm */
+    --part-h:               80px;      /* Standart parça kutusu yüksekliği */
+    --terminal-r:           5px;       /* Terminal dairesi yarıçapı */
+
+    /* ── Gölge & Efekt ───────────────────────────────────────────────────── */
+    --shadow-sm:            0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md:            0 4px 12px rgba(0,0,0,0.5);
+    --shadow-panel:         inset 0 2px 8px rgba(0,0,0,0.6);
+
+    /* ── Animasyon ───────────────────────────────────────────────────────── */
+    --transition-fast:      120ms ease;
+    --transition-normal:    220ms ease;
+    --anim-wire-dash:       wire-flow 1.2s linear infinite;
+
+    /* ── Tipografi ───────────────────────────────────────────────────────── */
+    --font-body:            'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-mono:            'JetBrains Mono', 'Consolas', monospace;
+    --font-size-xs:         0.7rem;
+    --font-size-sm:         0.8rem;
+    --font-size-base:       0.9rem;
+    --font-size-md:         1rem;
+    --font-size-lg:         1.1rem;
+    --radius-sm:            3px;
+    --radius-md:            5px;
+}
+
+/* ── Açık Tema ───────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+    :root {
+        --clr-bg:               #dde0e8;
+        --clr-panel-body:       #c8ccd4;
+        --clr-panel-inner:      #d4d8e0;
+        --clr-rail:             #adb2c0;
+        --clr-rail-groove:      #9aa0b0;
+        --clr-surface:          #e8eaf0;
+        --clr-surface-hover:    #f0f2f8;
+        --clr-surface-active:   #dce0f0;
+        --clr-field-zone:       #cdd0d8;
+        --clr-border:           #b0b8cc;
+        --clr-border-subtle:    #c4c8d8;
+        --clr-text:             #2a2e3a;
+        --clr-text-muted:       #6a7080;
+        --clr-text-disabled:    #b0b8cc;
+        --clr-text-heading:     #1a1e28;
+        --clr-text-label:       #5a6070;
+        --clr-part-off:         #b8bcc8;
+        --clr-status-info:      #8890a8;
+        --shadow-panel:         inset 0 2px 6px rgba(0,0,0,0.15);
+    }
+}
+
+/* ── Akan kablo animasyonu ───────────────────────────────────────────────── */
+/* prefers-reduced-motion açıksa animasyon durur (erişilebilirlik)           */
+@keyframes wire-flow {
+    to { stroke-dashoffset: -20; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --anim-wire-dash: none;
+    }
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

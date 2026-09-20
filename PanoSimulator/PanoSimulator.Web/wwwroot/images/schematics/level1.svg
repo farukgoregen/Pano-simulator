@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+    <!-- Arka plan -->
+    <rect width="600" height="400" fill="#23272e" />
+    
+    <!-- L1 Çizgisi -->
+    <line x1="50" y1="50" x2="550" y2="50" stroke="#a16207" stroke-width="2" />
+    <text x="30" y="55" fill="#e2e8f0" font-family="monospace" font-size="14">L1</text>
+    
+    <!-- N Çizgisi -->
+    <line x1="50" y1="350" x2="550" y2="350" stroke="#0ea5e9" stroke-width="2" />
+    <text x="30" y="355" fill="#e2e8f0" font-family="monospace" font-size="14">N</text>
+
+    <!-- Bağlantı 1: L1'den Q1'e -->
+    <line x1="150" y1="50" x2="150" y2="100" stroke="#a16207" stroke-width="2" />
+    <circle cx="150" cy="50" r="4" fill="#a16207" />
+    
+    <!-- Q1 (Otomat) Sembolü -->
+    <g transform="translate(140, 100)">
+        <rect x="0" y="0" width="20" height="40" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
+        <line x1="10" y1="0" x2="20" y2="40" stroke="#e2e8f0" stroke-width="1.5" />
+        <text x="-25" y="25" fill="#e2e8f0" font-family="monospace" font-size="14">Q1</text>
+    </g>
+
+    <!-- Bağlantı 2: Q1'den H1'e -->
+    <line x1="150" y1="140" x2="150" y2="220" stroke="#a16207" stroke-width="2" />
+
+    <!-- H1 (Lamba) Sembolü -->
+    <g transform="translate(130, 220)">
+        <circle cx="20" cy="20" r="20" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
+        <line x1="5" y1="5" x2="35" y2="35" stroke="#e2e8f0" stroke-width="1.5" />
+        <line x1="35" y1="5" x2="5" y2="35" stroke="#e2e8f0" stroke-width="1.5" />
+        <text x="-25" y="25" fill="#e2e8f0" font-family="monospace" font-size="14">H1</text>
+    </g>
+
+    <!-- Bağlantı 3: H1'den N'e -->
+    <line x1="150" y1="260" x2="150" y2="350" stroke="#0ea5e9" stroke-width="2" />
+    <circle cx="150" cy="350" r="4" fill="#0ea5e9" />
+
+    <!-- Başlık -->
+    <text x="300" y="380" fill="#94a3b8" font-family="sans-serif" font-size="16" text-anchor="middle">Seviye 1: Faz-Nötr ve Lamba Şeması</text>
+</svg>
